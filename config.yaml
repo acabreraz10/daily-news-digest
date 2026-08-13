@@ -233,13 +233,38 @@ feeds:
     default_topic: "Tennis"
 
   # Colombia sources (Spanish)
-  - name: "El Tiempo"
-    url: "https://www.eltiempo.com/rss/el_tiempo.xml"
+  - name: "El Tiempo - Colombia"
+    url: "https://www.eltiempo.com/rss/colombia.xml"
     language: "es"
     default_topic: "Colombia"
 
-  - name: "Portafolio"
-    url: "https://www.portafolio.co/rss"
+  - name: "El Tiempo - Economía"
+    url: "https://www.eltiempo.com/rss/economia.xml"
+    language: "es"
+    default_topic: "Colombia"
+
+  - name: "El Tiempo - Últimas Noticias"
+    url: "https://www.eltiempo.com/rss/ultimas-noticias.xml"
+    language: "es"
+    default_topic: "Colombia"
+
+  - name: "Portafolio - Economía"
+    url: "https://www.portafolio.co/rss/economia.xml"
+    language: "es"
+    default_topic: "Colombia"
+
+  - name: "Portafolio - Negocios"
+    url: "https://www.portafolio.co/rss/negocios.xml"
+    language: "es"
+    default_topic: "Colombia"
+
+  - name: "Semana"
+    url: "https://www.semana.com/arc/outboundfeeds/rss/?outputType=xml"
+    language: "es"
+    default_topic: "Colombia"
+
+  - name: "Semana - Nación"
+    url: "https://www.semana.com/arc/outboundfeeds/rss/category/nacion/?outputType=xml"
     language: "es"
     default_topic: "Colombia"
 
