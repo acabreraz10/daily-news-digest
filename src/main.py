@@ -20,6 +20,7 @@ from .categorizer import categorize_articles
 from .emailer import send_email
 from .feeds import fetch_all_feeds, filter_by_time
 from .formatter import build_html_email, build_plain_text_email
+from .ranker import rank_stories
 from .site_builder import write_site
 
 # Configure logging
@@ -173,8 +174,9 @@ def run_build(config: dict, output_dir: str = "public") -> bool:
     """
     Build the static web dashboard.
 
-    Fetches recent articles, categorizes them, and writes an HTML dashboard
-    (plus PWA manifest) to the output directory for GitHub Pages.
+    Pipeline: fetch -> time-filter -> rank (cluster + score across sources)
+    -> categorize the representative stories -> write an HTML dashboard with a
+    Top Stories hero and importance-ranked topic sections.
 
     Args:
         config: Loaded configuration dictionary.
@@ -184,8 +186,11 @@ def run_build(config: dict, output_dir: str = "public") -> bool:
         True if successful.
     """
     settings = config["settings"]
+    ranking = config.get("ranking", {})
     lookback = settings.get("lookback_hours_digest", 24)
-    max_per_topic = settings.get("max_articles_per_topic", 15)
+    max_per_topic = settings.get("max_articles_per_topic", 25)
+    top_stories_count = ranking.get("top_stories_count", 8)
+    preview_per_topic = ranking.get("preview_per_topic", 5)
 
     logger.info(f"Building dashboard (lookback: {lookback}h) -> {output_dir}/")
 
@@ -203,11 +208,32 @@ def run_build(config: dict, output_dir: str = "public") -> bool:
         logger.warning(f"No articles found in the last {lookback} hours")
         return False
 
-    # Categorize
-    categorized = categorize_articles(articles, config["topics"])
+    # Rank: cluster near-duplicate stories across sources and score by
+    # importance. Collapses duplicates to one representative per story.
+    stories = rank_stories(articles, config)
+
+    # Categorize the ranked representative stories.
+    categorized = categorize_articles(stories, config["topics"])
+
+    # Tag each story with its topic (used by the Top Stories hero) and
+    # re-sort each topic bucket by importance score (categorizer sorts by date).
+    for topic_name, topic_articles in categorized.items():
+        for article in topic_articles:
+            article.topic = topic_name
+        topic_articles.sort(key=lambda a: a.score, reverse=True)
+
+    # Top Stories hero = highest-scoring stories across all topics.
+    top_stories = stories[:top_stories_count]
 
     # Build the site
-    write_site(categorized, config["topics"], output_dir=output_dir, max_per_topic=max_per_topic)
+    write_site(
+        categorized,
+        config["topics"],
+        output_dir=output_dir,
+        max_per_topic=max_per_topic,
+        top_stories=top_stories,
+        preview_per_topic=preview_per_topic,
+    )
 
     return True
 

@@ -26,6 +26,12 @@ class Article:
     default_topic: str
     language: str = "en"
     article_id: str = field(default="", repr=False)
+    # Position of this article within its source feed (0 = most prominent).
+    feed_position: int = 0
+    # Fields populated later by the ranker/categorizer.
+    topic: str = ""
+    score: float = 0.0
+    corroborating_sources: list = field(default_factory=list)
 
     def __post_init__(self):
         if not self.article_id:
@@ -93,7 +99,7 @@ def fetch_feed(feed_config: dict) -> list[Article]:
             return []
 
         articles = []
-        for entry in feed.entries:
+        for position, entry in enumerate(feed.entries):
             title = entry.get("title", "").strip()
             link = entry.get("link", "").strip()
 
@@ -115,6 +121,7 @@ def fetch_feed(feed_config: dict) -> list[Article]:
                 source=name,
                 default_topic=default_topic,
                 language=language,
+                feed_position=position,
             )
             articles.append(article)
 

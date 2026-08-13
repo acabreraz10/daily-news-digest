@@ -6,10 +6,42 @@ settings:
   morning_digest_hour: 6
   midday_update_hour: 12
   evening_update_hour: 17
-  max_articles_per_topic: 10
+  max_articles_per_topic: 25
   max_articles_per_update: 5
   lookback_hours_digest: 24
   lookback_hours_update: 6
+
+# Importance ranking controls what gets previewed vs. tucked behind "show more".
+ranking:
+  # Number of stories in the cross-topic "Top Stories" hero section.
+  top_stories_count: 8
+  # Stories shown per topic before the "show more" expander.
+  preview_per_topic: 5
+  # Titles this similar (0-1 Jaccard on keywords) are treated as the same story.
+  similarity_threshold: 0.5
+  # How much each signal contributes to a story's importance score.
+  weights:
+    corroboration: 0.40   # covered by multiple independent sources
+    authority: 0.25       # trust weight of the source(s)
+    position: 0.15        # how high the outlet placed it in their feed
+    recency: 0.20         # how fresh the story is
+
+# Source authority weights (higher = more trusted/important).
+# Matched by name prefix, so "BBC" covers "BBC - World", "BBC - Tennis", etc.
+source_weights:
+  default: 5
+  Reuters: 10
+  BBC: 9
+  NYT: 9
+  WSJ: 9
+  Bloomberg: 9
+  CNN: 7
+  TechCrunch: 7
+  ESPN: 7
+  El Tiempo: 7
+  La República: 7
+  Semana: 6
+  Portafolio: 6
 
 email:
   # These values are pulled from environment variables / GitHub secrets
