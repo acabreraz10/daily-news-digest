@@ -1,0 +1,249 @@
+# Daily News Digest Configuration
+# Customize your feeds, topics, and schedule here
+
+settings:
+  timezone: "US/Pacific"
+  morning_digest_hour: 6
+  midday_update_hour: 12
+  evening_update_hour: 17
+  max_articles_per_topic: 10
+  max_articles_per_update: 5
+  lookback_hours_digest: 24
+  lookback_hours_update: 6
+
+email:
+  # These values are pulled from environment variables / GitHub secrets
+  smtp_server: "smtp.office365.com"
+  smtp_port: 587
+  use_tls: true
+  # sender and recipient are set via env vars: EMAIL_SENDER, EMAIL_PASSWORD, EMAIL_RECIPIENT
+
+topics:
+  - name: "AI & Technology"
+    icon: "\U0001F916"
+    keywords:
+      - artificial intelligence
+      - machine learning
+      - AI
+      - LLM
+      - GPT
+      - deep learning
+      - neural network
+      - startup
+      - tech
+      - software
+      - cloud
+      - cybersecurity
+
+  - name: "Finance & Markets"
+    icon: "\U0001F4C8"
+    keywords:
+      - stock
+      - market
+      - economy
+      - inflation
+      - fed
+      - interest rate
+      - crypto
+      - bitcoin
+      - investment
+      - earnings
+      - GDP
+      - trade
+      - banking
+
+  - name: "World News"
+    icon: "\U0001F30D"
+    keywords:
+      - war
+      - diplomacy
+      - UN
+      - NATO
+      - geopolitics
+      - climate
+      - summit
+      - treaty
+      - election
+      - government
+
+  - name: "Colombia"
+    icon: "\U0001F1E8\U0001F1F4"
+    keywords:
+      - colombia
+      - bogota
+      - bogotá
+      - medellín
+      - medellin
+      - petro
+      - peso colombiano
+      - economía colombiana
+
+  - name: "Business"
+    icon: "\U0001F4BC"
+    keywords:
+      - CEO
+      - acquisition
+      - merger
+      - IPO
+      - revenue
+      - corporate
+      - enterprise
+      - startup funding
+      - venture capital
+
+  - name: "Politics"
+    icon: "\U0001F3DB"
+    keywords:
+      - congress
+      - senate
+      - president
+      - policy
+      - legislation
+      - democrat
+      - republican
+      - election
+      - vote
+      - political
+
+  - name: "Soccer"
+    icon: "\u26BD"
+    keywords:
+      - soccer
+      - football
+      - FIFA
+      - Champions League
+      - Premier League
+      - La Liga
+      - goal
+      - transfer
+      - World Cup
+      - MLS
+
+  - name: "Tennis"
+    icon: "\U0001F3BE"
+    keywords:
+      - tennis
+      - ATP
+      - WTA
+      - Grand Slam
+      - Wimbledon
+      - US Open
+      - Roland Garros
+      - Australian Open
+      - Djokovic
+      - Alcaraz
+      - Sinner
+
+feeds:
+  # International English sources
+  - name: "Reuters - World"
+    url: "https://www.reutersagency.com/feed/?taxonomy=best-sectors&post_type=best"
+    language: "en"
+    default_topic: "World News"
+
+  - name: "Reuters - Business"
+    url: "https://www.reutersagency.com/feed/?taxonomy=best-sectors&post_type=best"
+    language: "en"
+    default_topic: "Business"
+
+  - name: "BBC - World"
+    url: "http://feeds.bbci.co.uk/news/world/rss.xml"
+    language: "en"
+    default_topic: "World News"
+
+  - name: "BBC - Technology"
+    url: "http://feeds.bbci.co.uk/news/technology/rss.xml"
+    language: "en"
+    default_topic: "AI & Technology"
+
+  - name: "BBC - Business"
+    url: "http://feeds.bbci.co.uk/news/business/rss.xml"
+    language: "en"
+    default_topic: "Finance & Markets"
+
+  - name: "CNN - World"
+    url: "http://rss.cnn.com/rss/edition_world.rss"
+    language: "en"
+    default_topic: "World News"
+
+  - name: "CNN - Technology"
+    url: "http://rss.cnn.com/rss/edition_technology.rss"
+    language: "en"
+    default_topic: "AI & Technology"
+
+  - name: "NYT - World"
+    url: "https://rss.nytimes.com/services/xml/rss/nyt/World.xml"
+    language: "en"
+    default_topic: "World News"
+
+  - name: "NYT - Technology"
+    url: "https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml"
+    language: "en"
+    default_topic: "AI & Technology"
+
+  - name: "NYT - Business"
+    url: "https://rss.nytimes.com/services/xml/rss/nyt/Business.xml"
+    language: "en"
+    default_topic: "Business"
+
+  - name: "NYT - Politics"
+    url: "https://rss.nytimes.com/services/xml/rss/nyt/Politics.xml"
+    language: "en"
+    default_topic: "Politics"
+
+  - name: "TechCrunch"
+    url: "https://techcrunch.com/feed/"
+    language: "en"
+    default_topic: "AI & Technology"
+
+  - name: "Bloomberg - Markets"
+    url: "https://feeds.bloomberg.com/markets/news.rss"
+    language: "en"
+    default_topic: "Finance & Markets"
+
+  - name: "WSJ - World"
+    url: "https://feeds.content.dowjones.io/public/rss/RSSWorldNews"
+    language: "en"
+    default_topic: "World News"
+
+  - name: "WSJ - Markets"
+    url: "https://feeds.content.dowjones.io/public/rss/RSSMarketsMain"
+    language: "en"
+    default_topic: "Finance & Markets"
+
+  - name: "WSJ - Technology"
+    url: "https://feeds.content.dowjones.io/public/rss/RSSWSJD"
+    language: "en"
+    default_topic: "AI & Technology"
+
+  # Sports
+  - name: "ESPN - Soccer"
+    url: "https://www.espn.com/espn/rss/soccer/news"
+    language: "en"
+    default_topic: "Soccer"
+
+  - name: "BBC - Football"
+    url: "http://feeds.bbci.co.uk/sport/football/rss.xml"
+    language: "en"
+    default_topic: "Soccer"
+
+  - name: "BBC - Tennis"
+    url: "http://feeds.bbci.co.uk/sport/tennis/rss.xml"
+    language: "en"
+    default_topic: "Tennis"
+
+  # Colombia sources (Spanish)
+  - name: "El Tiempo"
+    url: "https://www.eltiempo.com/rss/el_tiempo.xml"
+    language: "es"
+    default_topic: "Colombia"
+
+  - name: "Portafolio"
+    url: "https://www.portafolio.co/rss"
+    language: "es"
+    default_topic: "Colombia"
+
+  - name: "La República"
+    url: "https://www.larepublica.co/rss"
+    language: "es"
+    default_topic: "Colombia"

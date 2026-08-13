@@ -1,0 +1,59 @@
+name: Daily News Digest
+
+on:
+  schedule:
+    # Morning digest at 6:00 AM PST (14:00 UTC)
+    - cron: '0 14 * * *'
+    # Midday update at 12:00 PM PST (20:00 UTC)
+    - cron: '0 20 * * *'
+    # Evening update at 5:00 PM PST (01:00 UTC next day)
+    - cron: '0 1 * * *'
+
+  # Allow manual trigger for testing
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Run mode (digest or update)'
+        required: true
+        default: 'digest'
+        type: choice
+        options:
+          - digest
+          - update
+
+jobs:
+  send-digest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Determine run mode
+        id: mode
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "mode=${{ github.event.inputs.mode }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event.schedule }}" = "0 14 * * *" ]; then
+            echo "mode=digest" >> $GITHUB_OUTPUT
+          else
+            echo "mode=update" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run news digest
+        env:
+          EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+        run: python -m src.main ${{ steps.mode.outputs.mode }}
