@@ -52,7 +52,7 @@ def get_email_config() -> dict:
         "sender": sender,
         "password": password,
         "recipient": recipient,
-        "smtp_server": os.environ.get("SMTP_SERVER", "smtp.office365.com"),
+        "smtp_server": os.environ.get("SMTP_SERVER", "smtp.gmail.com"),
         "smtp_port": int(os.environ.get("SMTP_PORT", "587")),
     }
 

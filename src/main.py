@@ -20,6 +20,7 @@ from .categorizer import categorize_articles
 from .emailer import send_email
 from .feeds import fetch_all_feeds, filter_by_time
 from .formatter import build_html_email, build_plain_text_email
+from .site_builder import write_site
 
 # Configure logging
 logging.basicConfig(
@@ -168,24 +169,73 @@ def run_update(config: dict, dry_run: bool = False) -> bool:
     return send_email(subject, html_body, plain_text)
 
 
+def run_build(config: dict, output_dir: str = "public") -> bool:
+    """
+    Build the static web dashboard.
+
+    Fetches recent articles, categorizes them, and writes an HTML dashboard
+    (plus PWA manifest) to the output directory for GitHub Pages.
+
+    Args:
+        config: Loaded configuration dictionary.
+        output_dir: Directory to write the site into.
+
+    Returns:
+        True if successful.
+    """
+    settings = config["settings"]
+    lookback = settings.get("lookback_hours_digest", 24)
+    max_per_topic = settings.get("max_articles_per_topic", 15)
+
+    logger.info(f"Building dashboard (lookback: {lookback}h) -> {output_dir}/")
+
+    # Fetch all feeds
+    articles = fetch_all_feeds(config["feeds"])
+
+    if not articles:
+        logger.warning("No articles fetched from any feed")
+        return False
+
+    # Filter by time
+    articles = filter_by_time(articles, hours=lookback)
+
+    if not articles:
+        logger.warning(f"No articles found in the last {lookback} hours")
+        return False
+
+    # Categorize
+    categorized = categorize_articles(articles, config["topics"])
+
+    # Build the site
+    write_site(categorized, config["topics"], output_dir=output_dir, max_per_topic=max_per_topic)
+
+    return True
+
+
 def main():
     """Main entry point with CLI argument parsing."""
     parser = argparse.ArgumentParser(
-        description="Daily News Digest - Fetches, categorizes, and emails news updates"
+        description="Daily News Digest - Fetches, categorizes, and publishes news updates"
     )
     parser.add_argument(
         "mode",
-        choices=["digest", "update", "test"],
+        choices=["digest", "update", "test", "build"],
         help=(
-            "digest: Full morning digest (24h lookback). "
-            "update: Intraday update (6h lookback). "
-            "test: Dry run, prints to console without sending email."
+            "digest: Full morning digest email (24h lookback). "
+            "update: Intraday update email (6h lookback). "
+            "test: Dry run, prints to console without sending email. "
+            "build: Generate the static web dashboard into ./public."
         ),
     )
     parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Print output to console instead of sending email.",
+    )
+    parser.add_argument(
+        "--output",
+        default="public",
+        help="Output directory for build mode (default: public).",
     )
 
     args = parser.parse_args()
@@ -197,7 +247,9 @@ def main():
     dry_run = args.dry_run or args.mode == "test"
 
     # Run appropriate mode
-    if args.mode in ("digest", "test"):
+    if args.mode == "build":
+        success = run_build(config, output_dir=args.output)
+    elif args.mode in ("digest", "test"):
         success = run_digest(config, dry_run=dry_run)
     else:
         success = run_update(config, dry_run=dry_run)

@@ -13,7 +13,7 @@ settings:
 
 email:
   # These values are pulled from environment variables / GitHub secrets
-  smtp_server: "smtp.office365.com"
+  smtp_server: "smtp.gmail.com"
   smtp_port: 587
   use_tls: true
   # sender and recipient are set via env vars: EMAIL_SENDER, EMAIL_PASSWORD, EMAIL_RECIPIENT

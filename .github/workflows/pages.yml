@@ -1,0 +1,64 @@
+name: Build and Deploy News Dashboard
+
+on:
+  schedule:
+    # Morning refresh at 6:00 AM PST (14:00 UTC)
+    - cron: '0 14 * * *'
+    # Midday refresh at 12:00 PM PST (20:00 UTC)
+    - cron: '0 20 * * *'
+    # Evening refresh at 5:00 PM PST (01:00 UTC next day)
+    - cron: '0 1 * * *'
+
+  # Rebuild on every push to the default branch
+  push:
+    branches:
+      - master
+
+  # Allow manual trigger
+  workflow_dispatch:
+
+# Permissions required for GitHub Pages deployment
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build dashboard
+        run: python -m src.main build --output public
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
